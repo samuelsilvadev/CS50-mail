@@ -1,4 +1,5 @@
-import { sendEmailService } from "./services.js";
+import { formatDate } from "./data-utils.js";
+import { loadMailboxService, sendEmailService } from "./services.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Use buttons to toggle between views
@@ -33,14 +34,45 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
+  const emailsView = document.querySelector("#emails-view");
+
   // Show the mailbox and hide other views
-  document.querySelector("#emails-view").style.display = "block";
+  emailsView.style.display = "block";
   document.querySelector("#compose-view").style.display = "none";
 
   // Show the mailbox name
-  document.querySelector("#emails-view").innerHTML = `<h3>${
+  emailsView.innerHTML = `<h3>${
     mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
   }</h3>`;
+
+  loadMailboxService({
+    id: mailbox,
+    onSuccess: (emails) => {
+      const fragment = document.createDocumentFragment();
+
+      for (const email of emails) {
+        const listItem = document.createElement("li");
+        const sender = document.createElement("span");
+        sender.textContent = email.sender;
+
+        const subject = document.createElement("span");
+        subject.textContent = email.subject;
+
+        const timestamp = document.createElement("span");
+        timestamp.textContent = formatDate(email.timestamp);
+
+        listItem.appendChild(sender);
+        listItem.appendChild(subject);
+        listItem.appendChild(timestamp);
+        fragment.appendChild(listItem);
+      }
+
+      const list = document.createElement("ul");
+      list.classList.add("emails");
+      list.appendChild(fragment);
+      emailsView.appendChild(list);
+    },
+  });
 }
 
 function send_email(event) {
