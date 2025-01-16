@@ -65,6 +65,10 @@ function load_mailbox(mailbox) {
         listItem.appendChild(subject);
         listItem.appendChild(timestamp);
         fragment.appendChild(listItem);
+
+        if (email.read) {
+          listItem.classList.add("read");
+        }
       }
 
       const list = document.createElement("ul");
