@@ -45,7 +45,34 @@
   </form>
 </div>
 
-<di id="email-view" class="hidden"></di>
+<div id="email-view" class="hidden">
+  <dl class="email">
+    <div>
+      <dt>From:</dt>
+      <dd data-id="from"></dd>
+    </div>
+    <div>
+      <dt>To:</dt>
+      <dd data-id="to"></dd>
+    </div>
+    <div>
+      <dt>Subject:</dt>
+      <dd data-id="subject"></dd>
+    </div>
+    <div>
+      <dt>Timestamp:</dt>
+      <dd data-id="timestamp"></dd>
+    </div>
+  </dl>
+  <button class="btn btn-primary">Reply</button>
+  <hr />
+  <textarea
+    class="form-control"
+    data-id="body"
+    placeholder="Body"
+    readonly
+  ></textarea>
+</div>
 
 {% endblock %} {% block script %}
 <script type="module" src="{% static 'mail/inbox.js' %}"></script>

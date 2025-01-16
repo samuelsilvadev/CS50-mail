@@ -1,10 +1,15 @@
 import { formatDate } from "./date-utils.js";
-import { loadMailboxService, sendEmailService } from "./services.js";
+import {
+  loadEmailService,
+  loadMailboxService,
+  sendEmailService,
+} from "./services.js";
 import { View } from "./view.js";
 
 const views = {
   emails: View.create("#emails-view"),
   compose: View.create("#compose-view"),
+  email: View.create("#email-view"),
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -18,12 +23,14 @@ document.addEventListener("DOMContentLoaded", function () {
     .querySelector("#archived")
     .addEventListener("click", () => load_mailbox("archive"));
   document.querySelector("#compose").addEventListener("click", compose_email);
+  document.querySelector("#compose").addEventListener("click", loadEmail);
 
   load_mailbox("inbox");
 });
 
 function compose_email() {
   views.emails.hide();
+  views.email.hide();
   views.compose.show();
 
   // Clear out composition fields
@@ -37,8 +44,9 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
-  views.emails.show();
   views.compose.hide();
+  views.email.hide();
+  views.emails.show();
 
   views.emails.target.innerHTML = `<h3>${
     mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
@@ -68,12 +76,22 @@ function load_mailbox(mailbox) {
         if (email.read) {
           listItem.classList.add("read");
         }
+
+        listItem.setAttribute("data-email-id", email.id);
+        listItem.setAttribute("role", "button");
+        listItem.setAttribute(
+          "aria-label",
+          `Click to see details about the email from ${email.sender} with the subject ${email.subject}`
+        );
       }
 
       const list = document.createElement("ul");
       list.classList.add("emails");
+      list.setAttribute("data-id", "emails");
       list.appendChild(fragment);
       views.emails.target.appendChild(list);
+
+      addListenerOnEmails();
     },
   });
 }
@@ -107,4 +125,38 @@ function send_email(event) {
     },
     onError: () => {},
   });
+}
+
+function loadEmail(emailId) {
+  views.compose.hide();
+  views.emails.hide();
+  views.email.show();
+
+  loadEmailService({
+    id: emailId,
+    onSuccess: (email) => {
+      console.log(email);
+
+      document.querySelector('[data-id="from"]').textContent = email.sender;
+      document.querySelector('[data-id="to"]').textContent =
+        email.recipients.join(",");
+      document.querySelector('[data-id="subject"]').textContent = email.subject;
+      document.querySelector('[data-id="timestamp"]').textContent = formatDate(
+        email.timestamp
+      );
+      document.querySelector('[data-id="body"]').textContent = email.body;
+    },
+  });
+}
+
+function addListenerOnEmails() {
+  const $emails = document.querySelector("[data-id='emails']");
+
+  const navigateToEmail = (event) => {
+    const emailId = event.target.closest("li")?.dataset?.emailId;
+
+    loadEmail(emailId);
+  };
+
+  $emails.addEventListener("click", navigateToEmail);
 }

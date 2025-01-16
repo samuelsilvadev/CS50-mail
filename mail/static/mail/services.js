@@ -18,3 +18,13 @@ export function loadMailboxService({ id, onSuccess, onError, onSettled }) {
     .catch((error) => onError?.(error))
     .finally(onSettled);
 }
+
+export function loadEmailService({ id, onSuccess, onError, onSettled }) {
+  return fetch(`/emails/${id}`, {
+    method: "GET",
+  })
+    .then((response) => response.json())
+    .then((response) => onSuccess?.(response))
+    .catch((error) => onError?.(error))
+    .finally(onSettled);
+}
