@@ -12,11 +12,7 @@
 
 <div id="compose-view">
   <h3>New Email</h3>
-  <form
-    id="compose-form"
-    class="compose-email-form"
-    onsubmit="send_email(event)"
-  >
+  <form id="compose-form" class="compose-email-form">
     <div class="form-group">
       From:
       <input disabled class="form-control" value="{{ request.user.email }}" />
