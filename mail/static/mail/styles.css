@@ -31,3 +31,7 @@ textarea {
     background-color: #efeaea;
   }
 }
+
+.hidden {
+  display: none;
+}
