@@ -1,8 +1,13 @@
 import { formatDate } from "./date-utils.js";
 import { loadMailboxService, sendEmailService } from "./services.js";
+import { View } from "./view.js";
+
+const views = {
+  emails: View.create("#emails-view"),
+  compose: View.create("#compose-view"),
+};
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Use buttons to toggle between views
   document
     .querySelector("#inbox")
     .addEventListener("click", () => load_mailbox("inbox"));
@@ -14,14 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("click", () => load_mailbox("archive"));
   document.querySelector("#compose").addEventListener("click", compose_email);
 
-  // By default, load the inbox
   load_mailbox("inbox");
 });
 
 function compose_email() {
-  // Show compose view and hide other views
-  document.querySelector("#emails-view").style.display = "none";
-  document.querySelector("#compose-view").style.display = "block";
+  views.emails.hide();
+  views.compose.show();
 
   // Clear out composition fields
   document.querySelector("#compose-recipients").value = "";
@@ -34,14 +37,10 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
-  const emailsView = document.querySelector("#emails-view");
+  views.emails.show();
+  views.compose.hide();
 
-  // Show the mailbox and hide other views
-  emailsView.style.display = "block";
-  document.querySelector("#compose-view").style.display = "none";
-
-  // Show the mailbox name
-  emailsView.innerHTML = `<h3>${
+  views.emails.target.innerHTML = `<h3>${
     mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
   }</h3>`;
 
@@ -74,7 +73,7 @@ function load_mailbox(mailbox) {
       const list = document.createElement("ul");
       list.classList.add("emails");
       list.appendChild(fragment);
-      emailsView.appendChild(list);
+      views.emails.target.appendChild(list);
     },
   });
 }
