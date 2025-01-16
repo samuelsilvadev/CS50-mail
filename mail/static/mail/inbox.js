@@ -32,7 +32,7 @@ function compose_email() {
   document.querySelector("#compose-body").value = "";
 
   document
-    .querySelector("#compose-view")
+    .querySelector("#compose-form")
     .addEventListener("submit", send_email);
 }
 
