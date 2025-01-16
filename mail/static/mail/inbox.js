@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .querySelector("#archived")
     .addEventListener("click", () => load_mailbox("archive"));
   document.querySelector("#compose").addEventListener("click", compose_email);
-  document.querySelector("#compose").addEventListener("click", loadEmail);
 
   load_mailbox("inbox");
 });
@@ -148,6 +147,43 @@ function loadEmail(emailId) {
       if (!email.read) {
         updateEmailService({ id: emailId, body: { read: true } });
       }
+
+      const $unArchiveButton = document.querySelector(
+        '[data-id="btn-unarchive"]'
+      );
+      const $archiveButton = document.querySelector('[data-id="btn-archive"]');
+
+      $unArchiveButton.style.display = email.archived ? "inline-block" : "none";
+      $archiveButton.style.display = email.archived ? "none" : "inline-block";
+
+      $unArchiveButton.addEventListener("click", () => {
+        $unArchiveButton.setAttribute("disabled", "true");
+        updateEmailService({
+          id: emailId,
+          body: { archived: false },
+          onSuccess: () => {
+            $unArchiveButton.style.display = "none";
+            $archiveButton.style.display = "inline-block";
+          },
+          onSettled: () => {
+            $unArchiveButton.removeAttribute("disabled");
+          },
+        });
+      });
+      $archiveButton.addEventListener("click", () => {
+        $archiveButton.setAttribute("disabled", "true");
+        updateEmailService({
+          id: emailId,
+          body: { archived: true },
+          onSuccess: () => {
+            $archiveButton.style.display = "none";
+            $unArchiveButton.style.display = "inline-block";
+          },
+          onSettled: () => {
+            $archiveButton.removeAttribute("disabled");
+          },
+        });
+      });
     },
   });
 }

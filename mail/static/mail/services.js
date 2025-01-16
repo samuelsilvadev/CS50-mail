@@ -40,8 +40,17 @@ export function updateEmailService({
     method: "PUT",
     body: JSON.stringify(body),
   })
-    .then((response) => response.json())
-    .then((response) => onSuccess?.(response))
+    .then(async (response) => {
+      if (response.ok) {
+        let parsedResponse = {};
+
+        try {
+          parsedResponse = await response.json();
+        } catch {}
+
+        onSuccess?.(parsedResponse);
+      }
+    })
     .catch((error) => onError?.(error))
     .finally(onSettled);
 }
