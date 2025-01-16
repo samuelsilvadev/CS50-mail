@@ -1,4 +1,4 @@
-import { formatDate } from "./data-utils.js";
+import { formatDate } from "./date-utils.js";
 import { loadMailboxService, sendEmailService } from "./services.js";
 
 document.addEventListener("DOMContentLoaded", function () {
