@@ -3,6 +3,7 @@ import {
   loadEmailService,
   loadMailboxService,
   sendEmailService,
+  updateEmailService,
 } from "./services.js";
 import { View } from "./view.js";
 
@@ -135,8 +136,6 @@ function loadEmail(emailId) {
   loadEmailService({
     id: emailId,
     onSuccess: (email) => {
-      console.log(email);
-
       document.querySelector('[data-id="from"]').textContent = email.sender;
       document.querySelector('[data-id="to"]').textContent =
         email.recipients.join(",");
@@ -145,6 +144,10 @@ function loadEmail(emailId) {
         email.timestamp
       );
       document.querySelector('[data-id="body"]').textContent = email.body;
+
+      if (!email.read) {
+        updateEmailService({ id: emailId, body: { read: true } });
+      }
     },
   });
 }
