@@ -117,13 +117,26 @@ function send_email(event) {
       recipients,
     },
     onSuccess: () => {
+      showEmailSentSuccessfullyToast();
+      form.reset();
+    },
+    onError: (error) => {
+      const $errorMessage = document.querySelector('[data-id="error-message"]');
+      const failureReason =
+        error?.message ??
+        error?.error ??
+        "Something went wrong, try again later.";
+      console.log("🚀 ~ send_email ~ error:", error);
+      $errorMessage.textContent = failureReason;
+
+      showEmailSentFailureToast();
+    },
+    onSettled: () => {
       setTimeout(() => {
         form.removeAttribute("data-loading");
         submitButton.removeAttribute("disabled");
-        form.reset();
       }, 500);
     },
-    onError: () => {},
   });
 }
 
@@ -225,4 +238,16 @@ function load_reply(email) {
     subject: normalizeSubject(email.subject),
     body: prepareBodyReply(email),
   });
+}
+
+function showEmailSentSuccessfullyToast() {
+  const successEmailToast = document.getElementById("email-sent-success");
+  const toastBootstrap = bootstrap.Toast.getOrCreateInstance(successEmailToast);
+  toastBootstrap.show();
+}
+
+function showEmailSentFailureToast() {
+  const failureEmailToast = document.getElementById("email-sent-failure");
+  const toastBootstrap = bootstrap.Toast.getOrCreateInstance(failureEmailToast);
+  toastBootstrap.show();
 }

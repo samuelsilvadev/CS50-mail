@@ -1,11 +1,30 @@
+async function toJSON(response) {
+  let parsedResponse = null;
+
+  try {
+    parsedResponse = await response.json();
+  } catch {}
+
+  return parsedResponse;
+}
+
 export function sendEmailService({ body, onSuccess, onError, onSettled }) {
   return fetch("/emails", {
     method: "POST",
     body: JSON.stringify(body),
   })
-    .then((response) => response.json())
-    .then((response) => onSuccess?.(response))
-    .catch((error) => onError?.(error))
+    .then(async (response) => {
+      if (response.ok) {
+        onSuccess?.(await toJSON(response));
+      }
+
+      throw response;
+    })
+    .catch(async (error) => {
+      const parsedError = await toJSON(error);
+
+      onError?.(parsedError ?? error);
+    })
     .finally(onSettled);
 }
 
@@ -42,13 +61,7 @@ export function updateEmailService({
   })
     .then(async (response) => {
       if (response.ok) {
-        let parsedResponse = {};
-
-        try {
-          parsedResponse = await response.json();
-        } catch {}
-
-        onSuccess?.(parsedResponse);
+        onSuccess?.(await toJSON(response));
       }
     })
     .catch((error) => onError?.(error))
