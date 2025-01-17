@@ -16,6 +16,7 @@ export function sendEmailService({ body, onSuccess, onError, onSettled }) {
     .then(async (response) => {
       if (response.ok) {
         onSuccess?.(await toJSON(response));
+        return;
       }
 
       throw response;
@@ -62,7 +63,10 @@ export function updateEmailService({
     .then(async (response) => {
       if (response.ok) {
         onSuccess?.(await toJSON(response));
+        return;
       }
+
+      throw response;
     })
     .catch((error) => onError?.(error))
     .finally(onSettled);
