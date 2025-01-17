@@ -171,36 +171,68 @@ function loadEmail(emailId) {
       $unArchiveButton.style.display = email.archived ? "inline-block" : "none";
       $archiveButton.style.display = email.archived ? "none" : "inline-block";
 
-      $unArchiveButton.addEventListener("click", () => {
+      const handleUnArchive = () => {
         $unArchiveButton.setAttribute("disabled", "true");
         updateEmailService({
           id: emailId,
           body: { archived: false },
           onSuccess: () => {
             $unArchiveButton.style.display = "none";
+            $unArchiveButton.removeEventListener("click", handleUnArchive);
+
             $archiveButton.style.display = "inline-block";
+            $archiveButton.addEventListener("click", handleArchive);
           },
           onSettled: () => {
             $unArchiveButton.removeAttribute("disabled");
           },
         });
-      });
-      $archiveButton.addEventListener("click", () => {
+      };
+
+      const handleArchive = () => {
         $archiveButton.setAttribute("disabled", "true");
         updateEmailService({
           id: emailId,
           body: { archived: true },
           onSuccess: () => {
             $archiveButton.style.display = "none";
+            $archiveButton.removeEventListener("click", handleArchive);
+
             $unArchiveButton.style.display = "inline-block";
+            $unArchiveButton.addEventListener("click", handleUnArchive);
           },
           onSettled: () => {
             $archiveButton.removeAttribute("disabled");
           },
         });
-      });
-      $replyButton.addEventListener("click", () => {
+      };
+
+      const handleReply = () => {
         load_reply(email);
+      };
+
+      $unArchiveButton.addEventListener("click", handleUnArchive);
+      $archiveButton.addEventListener("click", handleArchive);
+      $replyButton.addEventListener("click", handleReply);
+
+      const observer = new MutationObserver((mutationsList) => {
+        mutationsList.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "style" &&
+            views.email.target.style.display === "none"
+          ) {
+            $unArchiveButton.removeEventListener("click", handleUnArchive);
+            $archiveButton.removeEventListener("click", handleArchive);
+            $replyButton.removeEventListener("click", handleReply);
+            observer.disconnect();
+          }
+        });
+      });
+
+      observer.observe(views.email.target, {
+        attributes: true,
+        attributeFilter: ["style"],
       });
     },
   });
