@@ -2,14 +2,14 @@
 <h2>{{ request.user.email }}</h2>
 
 <button class="btn btn-sm btn-outline-primary" id="inbox">
-  Inbox <span class="badge text-bg-primary" data-id="inbox-count"></span>
+  Inbox <span class="badge text-bg-primary" data-id="inbox-count">0</span>
 </button>
 <button class="btn btn-sm btn-outline-primary" id="compose">Compose</button>
 <button class="btn btn-sm btn-outline-primary" id="sent">
-  Sent <span class="badge text-bg-primary" data-id="sent-count"></span>
+  Sent <span class="badge text-bg-primary" data-id="sent-count">0</span>
 </button>
 <button class="btn btn-sm btn-outline-primary" id="archived">
-  Archived <span class="badge text-bg-primary" data-id="archived-count"></span>
+  Archived <span class="badge text-bg-primary" data-id="archived-count">0</span>
 </button>
 <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
 <hr />

@@ -254,17 +254,35 @@ function showEmailSentFailureToast() {
   toastBootstrap.show();
 }
 
-function pollAndDisplayCounts() {
-  setInterval(() => {
-    loadCountsService({
-      onSuccess: (response) => {
-        document.querySelector('[data-id="inbox-count"]').textContent =
-          response.inbox;
-        document.querySelector('[data-id="sent-count"]').textContent =
-          response.sent;
-        document.querySelector('[data-id="archived-count"]').textContent =
-          response.archived;
-      },
-    });
+function loadCountsAndDisplayCounts() {
+  loadCountsService({
+    onSuccess: (response) => {
+      document.querySelector('[data-id="inbox-count"]').textContent =
+        response.inbox;
+      document.querySelector('[data-id="sent-count"]').textContent =
+        response.sent;
+      document.querySelector('[data-id="archived-count"]').textContent =
+        response.archived;
+    },
+  });
+}
+
+function createPollingForCounts() {
+  return setInterval(() => {
+    loadCountsAndDisplayCounts();
   }, 5000);
+}
+
+function pollAndDisplayCounts() {
+  loadCountsAndDisplayCounts();
+
+  let intervalId = createPollingForCounts();
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      clearInterval(intervalId);
+    } else {
+      intervalId = createPollingForCounts();
+    }
+  });
 }
