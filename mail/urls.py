@@ -9,6 +9,7 @@ urlpatterns = [
     path("register", views.register, name="register"),
     # API Routes
     path("emails", views.compose, name="compose"),
+    path("emails/counts", views.get_counts, name="get_counts"),
     path("emails/<int:email_id>", views.email, name="email"),
     path("emails/<str:mailbox>", views.mailbox, name="mailbox"),
 ]

@@ -152,7 +152,8 @@ def register(request):
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(
-                request, "mail/register.html", {"message": "Passwords must match."}
+                request, "mail/register.html", {
+                    "message": "Passwords must match."}
             )
 
         # Attempt to create new user
@@ -170,3 +171,21 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "mail/register.html")
+
+
+@login_required
+def get_counts(request):
+    inbox_count = Email.objects.filter(
+        user=request.user, recipients=request.user, archived=False
+    ).count()
+
+    sent_count = Email.objects.filter(
+        user=request.user, sender=request.user).count()
+
+    archived_count = Email.objects.filter(
+        user=request.user, recipients=request.user, archived=True
+    ).count()
+
+    print(inbox_count)
+
+    return JsonResponse({"inbox": inbox_count, "sent": sent_count, "archived": archived_count}, status=200)
