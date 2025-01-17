@@ -28,15 +28,15 @@ document.addEventListener("DOMContentLoaded", function () {
   load_mailbox("inbox");
 });
 
-function compose_email() {
+function compose_email({ recipients = "", subject = "", body = "" } = {}) {
   views.emails.hide();
   views.email.hide();
   views.compose.show();
 
   // Clear out composition fields
-  document.querySelector("#compose-recipients").value = "";
-  document.querySelector("#compose-subject").value = "";
-  document.querySelector("#compose-body").value = "";
+  document.querySelector("#compose-recipients").value = recipients;
+  document.querySelector("#compose-subject").value = subject;
+  document.querySelector("#compose-body").value = body;
 
   document
     .querySelector("#compose-form")
@@ -152,6 +152,7 @@ function loadEmail(emailId) {
         '[data-id="btn-unarchive"]'
       );
       const $archiveButton = document.querySelector('[data-id="btn-archive"]');
+      const $replyButton = document.querySelector('[data-id="reply"]');
 
       $unArchiveButton.style.display = email.archived ? "inline-block" : "none";
       $archiveButton.style.display = email.archived ? "none" : "inline-block";
@@ -184,6 +185,9 @@ function loadEmail(emailId) {
           },
         });
       });
+      $replyButton.addEventListener("click", () => {
+        load_reply(email);
+      });
     },
   });
 }
@@ -198,4 +202,27 @@ function addListenerOnEmails() {
   };
 
   $emails.addEventListener("click", navigateToEmail);
+}
+
+function normalizeSubject(subject) {
+  if (subject?.toLowerCase()?.replaceAll(" ", "")?.startsWith("re:")) {
+    return subject;
+  }
+
+  return `Re: ${subject ?? ""}`;
+}
+
+function prepareBodyReply(email) {
+  return `On ${email.timestamp} ${email.sender} wrote:
+  
+  ${email.body}
+  `;
+}
+
+function load_reply(email) {
+  compose_email({
+    recipients: email.sender,
+    subject: normalizeSubject(email.subject),
+    body: prepareBodyReply(email),
+  });
 }
