@@ -1,5 +1,6 @@
 import { formatDate } from "./date-utils.js";
 import {
+  loadCountsService,
   loadEmailService,
   loadMailboxService,
   sendEmailService,
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelector("#compose").addEventListener("click", compose_email);
 
   load_mailbox("inbox");
+  pollAndDisplayCounts();
 });
 
 function compose_email({ recipients = "", subject = "", body = "" } = {}) {
@@ -250,4 +252,19 @@ function showEmailSentFailureToast() {
   const failureEmailToast = document.getElementById("email-sent-failure");
   const toastBootstrap = bootstrap.Toast.getOrCreateInstance(failureEmailToast);
   toastBootstrap.show();
+}
+
+function pollAndDisplayCounts() {
+  setInterval(() => {
+    loadCountsService({
+      onSuccess: (response) => {
+        document.querySelector('[data-id="inbox-count"]').textContent =
+          response.inbox;
+        document.querySelector('[data-id="sent-count"]').textContent =
+          response.sent;
+        document.querySelector('[data-id="archived-count"]').textContent =
+          response.archived;
+      },
+    });
+  }, 5000);
 }

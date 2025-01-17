@@ -67,3 +67,13 @@ export function updateEmailService({
     .catch((error) => onError?.(error))
     .finally(onSettled);
 }
+
+export function loadCountsService({ onSuccess, onError, onSettled }) {
+  return fetch(`/emails/counts`, {
+    method: "GET",
+  })
+    .then((response) => response.json())
+    .then((response) => onSuccess?.(response))
+    .catch((error) => onError?.(error))
+    .finally(onSettled);
+}
