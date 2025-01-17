@@ -35,7 +35,6 @@ function compose_email({ recipients = "", subject = "", body = "" } = {}) {
   views.email.hide();
   views.compose.show();
 
-  // Clear out composition fields
   document.querySelector("#compose-recipients").value = recipients;
   document.querySelector("#compose-subject").value = subject;
   document.querySelector("#compose-body").value = body;
@@ -128,7 +127,7 @@ function send_email(event) {
         error?.message ??
         error?.error ??
         "Something went wrong, try again later.";
-      console.log("🚀 ~ send_email ~ error:", error);
+
       $errorMessage.textContent = failureReason;
 
       showEmailSentFailureToast();
