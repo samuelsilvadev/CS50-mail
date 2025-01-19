@@ -120,6 +120,7 @@ function send_email(event) {
     onSuccess: () => {
       showEmailSentSuccessfullyToast();
       form.reset();
+      load_mailbox("sent");
     },
     onError: (error) => {
       const $errorMessage = document.querySelector('[data-id="error-message"]');
@@ -182,6 +183,7 @@ function loadEmail(emailId) {
 
             $archiveButton.style.display = "inline-block";
             $archiveButton.addEventListener("click", handleArchive);
+            load_mailbox("inbox");
           },
           onSettled: () => {
             $unArchiveButton.removeAttribute("disabled");
@@ -200,6 +202,7 @@ function loadEmail(emailId) {
 
             $unArchiveButton.style.display = "inline-block";
             $unArchiveButton.addEventListener("click", handleUnArchive);
+            load_mailbox("inbox");
           },
           onSettled: () => {
             $archiveButton.removeAttribute("disabled");
